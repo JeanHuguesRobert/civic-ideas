@@ -21,7 +21,7 @@ function App() {
   const [email,setEmail] = useState("");
   const [consent,setConsent] = useState(false);
   const [showForm,setShowForm] = useState(false);
-  const [voterType,setVoterType] = useState("cortenais");
+  const [voterType,setVoterType] = useState("résident");
   const [selectedTags,setSelectedTags] = useState([]);
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
@@ -72,9 +72,9 @@ function App() {
 
   function drawChart(list){
     const palette = {
-      logement:'#FF0000',mobilite:'#0000FF',environnement:'#FFFF00',
-      economie:'#FF0000',services:'#0000FF',culture:'#FFFF00',
-      securite:'#FF0000',tourisme:'#0000FF'
+      logement:'#FF0000',"mobilité":'#0000FF',environnement:'#FFFF00',
+      "économie":'#FF0000',services:'#0000FF',culture:'#FFFF00',
+      "sécurité":'#FF0000',tourisme:'#0000FF'
     };
     let counts={};
     let colors={};
@@ -100,10 +100,11 @@ function App() {
     React.createElement("h1",{className:"text-3xl font-bold mb-6", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
 
     React.createElement("div",{className:"mb-4"},
+      React.createElement("span",{className:"mr-2 font-bold"},"Vous êtes : "),
       React.createElement("select",{value:voterType,onChange:e=>setVoterType(e.target.value),className:"border-2 border-black p-2 rounded"},
-        React.createElement("option",{value:"cortenais"},"Cortenais"),
-        React.createElement("option",{value:"cortenais_region"},"Cortenais région"),
-        React.createElement("option",{value:"etudiant"},"Étudiant"),
+        React.createElement("option",{value:"résident"},"Résident"),
+        React.createElement("option",{value:"alentour"},"Alentour"),
+        React.createElement("option",{value:"étudiant"},"Étudiant"),
         React.createElement("option",{value:"visiteur"},"Visiteur")
       )
     ),
@@ -118,7 +119,7 @@ function App() {
     filteredIdeas.map(i=>React.createElement("div",{key:i.id,className:"bg-white border-4 border-black p-4 mb-3 rounded"},
       React.createElement("div",{className:"mb-2 font-bold"},i.text),
       React.createElement("div",{className:"text-sm text-black mb-2"},(i.tags||[]).map(t=>"#"+t).join(" ")),
-      React.createElement("div",{className:"text-xs mb-2"},"Votes: "+i.votes),
+      React.createElement("div",{className:"text-xs mb-2"},"Votes : "+i.votes),
       React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF', fontWeight:'bold'},onClick:()=>vote(i.id)},"👍 Voter")
     )),
 
@@ -126,7 +127,7 @@ function App() {
       React.createElement("button",{className:"px-4 py-2 rounded mb-4", style:{backgroundColor:'#FF0000', color:'#FFFFFF', fontWeight:'bold'}, onClick:()=>setShowForm(!showForm)}, showForm ? "Fermer" : "Proposer une idée"),
       showForm && React.createElement("div",{className:"bg-white border-4 border-black p-4 rounded"},
         React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"Votre idée",value:text,onChange:e=>setText(e.target.value)}),
-        React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"#logement,#mobilite",value:tags,onChange:e=>setTags(e.target.value)}),
+        React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"#logement,#mobilité",value:tags,onChange:e=>setTags(e.target.value)}),
         React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"email optionnel",value:email,onChange:e=>setEmail(e.target.value)}),
         email && React.createElement("label",{className:"text-sm block mb-2"},
           React.createElement("input",{type:"checkbox",checked:consent,onChange:e=>setConsent(e.target.checked)}),
