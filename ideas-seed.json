@@ -1,0 +1,49 @@
+[
+  {"text":"Construire une résidence étudiante municipale","tags":["logement"]},
+  {"text":"Transformer des bâtiments publics en logements étudiants","tags":["logement"]},
+  {"text":"Observatoire municipal des loyers","tags":["logement"]},
+  {"text":"Programme rénovation logements anciens centre-ville","tags":["logement"]},
+  {"text":"Taxe sur logements vacants","tags":["logement"]},
+
+  {"text":"Navette gratuite campus gare centre-ville","tags":["mobilite"]},
+  {"text":"Parkings périphériques avec navette","tags":["mobilite"]},
+  {"text":"Plus de pistes cyclables","tags":["mobilite"]},
+  {"text":"Sécuriser passages piétons écoles","tags":["mobilite"]},
+  {"text":"Stationnement résident prioritaire","tags":["mobilite"]},
+
+  {"text":"Plan municipal contre déchets sauvages","tags":["environnement"]},
+  {"text":"Nettoyage régulier rivières","tags":["environnement"]},
+  {"text":"Plus de points de tri","tags":["environnement"]},
+  {"text":"Programme autonomie énergétique bâtiments publics","tags":["environnement"]},
+  {"text":"Parc naturel urbain","tags":["environnement"]},
+
+  {"text":"Marché paysan permanent","tags":["economie"]},
+  {"text":"Label produit du Cortenais","tags":["economie"]},
+  {"text":"Aide municipale artisans centre","tags":["economie"]},
+  {"text":"Incubateur startups université","tags":["economie"]},
+  {"text":"Plateforme promotion producteurs locaux","tags":["economie"]},
+
+  {"text":"Maison de santé municipale","tags":["services"]},
+  {"text":"Extension horaires crèche","tags":["services"]},
+  {"text":"Maison des associations","tags":["services"]},
+  {"text":"Plateforme signalement problèmes urbains","tags":["services"]},
+  {"text":"Budget participatif municipal","tags":["services"]},
+
+  {"text":"Festival historique Paoli","tags":["culture"]},
+  {"text":"Ateliers langue corse","tags":["culture"]},
+  {"text":"Soutien artistes corses","tags":["culture"]},
+  {"text":"Parcours historique numérique ville","tags":["culture"]},
+  {"text":"Valorisation musée citadelle","tags":["culture"]},
+
+  {"text":"Médiateurs de nuit quartiers étudiants","tags":["securite"]},
+  {"text":"Éclairage public renforcé","tags":["securite"]},
+  {"text":"Prévention addictions étudiants","tags":["securite"]},
+  {"text":"Vidéoprotection zones sensibles","tags":["securite"]},
+  {"text":"Coordination police municipale campus","tags":["securite"]},
+
+  {"text":"Navettes estivales vallées Restonica","tags":["tourisme"]},
+  {"text":"Signalétique touristique améliorée","tags":["tourisme"]},
+  {"text":"Tourisme culturel hors saison","tags":["tourisme"]},
+  {"text":"Gestion flux visiteurs été","tags":["tourisme"]},
+  {"text":"Promotion patrimoine historique","tags":["tourisme"]}
+]
