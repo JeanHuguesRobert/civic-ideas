@@ -134,6 +134,12 @@ function App() {
       React.createElement("div",{className:"mb-2 font-bold"},i.text),
       React.createElement("div",{className:"text-sm text-black mb-2"},(i.tags||[]).map(t=>"#"+t).join(" ")),
       React.createElement("div",{className:"text-xs mb-2"},"Votes : "+i.votes),
+      React.createElement("div",{className:"text-xs mb-2"},
+        (i.byType && i.byType["résident"]>0) ? "Résident: "+i.byType["résident"]+" " : "",
+        (i.byType && i.byType["alentour"]>0) ? "Alentour: "+i.byType["alentour"]+" " : "",
+        (i.byType && i.byType["étudiant"]>0) ? "Étudiant: "+i.byType["étudiant"]+" " : "",
+        (i.byType && i.byType["visiteur"]>0) ? "Visiteur: "+i.byType["visiteur"] : ""
+      ),
       React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:votedIds.includes(i.id)?'#000000':'#0000FF', color:'#FFFFFF', fontWeight:'bold', opacity:votedIds.includes(i.id)?0.6:1, cursor:votedIds.includes(i.id)?'not-allowed':'pointer'},onClick:()=>vote(i.id)},"👍 Voter")
     )),
 
