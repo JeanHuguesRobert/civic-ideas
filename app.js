@@ -22,23 +22,29 @@ function App() {
   const [consent,setConsent] = useState(false);
   const [showForm,setShowForm] = useState(false);
   const [voterType,setVoterType] = useState("cortenais");
+  const [selectedTags,setSelectedTags] = useState([]);
   const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
 
   async function seed() {
     if(!seedIdeas || seedIdeas.length===0) return;
-    let {data} = await supabase.from("ideas").select("id").limit(1);
+    let {data, error} = await supabase.from("ideas").select("id").limit(1);
+    if(error){ alert(error.message); return; }
     if(data && data.length>0) return;
     for(let i of seedIdeas){
-      await supabase.from("ideas").insert({text:i.text,tags:i.tags});
+      let {error: insertError} = await supabase.from("ideas").insert({text:i.text,tags:i.tags});
+      if(insertError){ alert(insertError.message); return; }
     }
   }
 
   async function loadIdeas(){
-    let {data: ideasData} = await supabase.from("ideas").select("*");
-    let {data: votes} = await supabase.from("votes").select("*");
+    let {data: ideasData, error: ideasError} = await supabase.from("ideas").select("*");
+    if(ideasError){ alert(ideasError.message); return; }
+    let {data: votes, error: votesError} = await supabase.from("votes").select("*");
+    if(votesError){ alert(votesError.message); return; }
     let map = {};
-    ideasData.forEach(i=>map[i.id]={...i,votes:0,byType:{}});
-    votes.forEach(v=>{
+    (ideasData||[]).forEach(i=>map[i.id]={...i,votes:0,byType:{}});
+    (votes||[]).forEach(v=>{
       let m = map[v.idea_id];
       if(!m) return;
       m.votes++;
@@ -52,14 +58,16 @@ function App() {
   async function addIdea(){
     if(!text) return;
     if(email && !consent){ alert("Consentement RGPD requis"); return; }
-    await supabase.from("ideas").insert({text, tags:tags.split(",").map(t=>t.trim()).filter(Boolean), email:email||null});
+    let {error} = await supabase.from("ideas").insert({text, tags:tags.split(",").map(t=>t.trim()).filter(Boolean), email:email||null});
+    if(error){ alert(error.message); return; }
     setText(""); setTags(""); setEmail(""); setConsent(false); setShowForm(false);
-    loadIdeas();
+    await loadIdeas();
   }
 
   async function vote(id){
-    await supabase.from("votes").insert({idea_id:id,voter_type:voterType});
-    loadIdeas();
+    let {error} = await supabase.from("votes").insert({idea_id:id,voter_type:voterType});
+    if(error){ alert(error.message); return; }
+    await loadIdeas();
   }
 
   function drawChart(list){
@@ -75,7 +83,8 @@ function App() {
       colors[t]=palette[t]||'#000000';
     })});
     if(!chartRef.current) return;
-    new Chart(chartRef.current,{
+    if(chartInstanceRef.current){ chartInstanceRef.current.destroy(); }
+    chartInstanceRef.current = new Chart(chartRef.current,{
       type:'bar',
       data:{labels:Object.keys(counts),datasets:[{label:'Priorités',data:Object.values(counts),backgroundColor:Object.keys(counts).map(t=>colors[t])}]},
       options:{responsive:true,plugins:{legend:{display:false}}}
@@ -83,6 +92,9 @@ function App() {
   }
 
   useEffect(()=>{ async function init(){ await loadSeedIdeas(); await seed(); await loadIdeas(); } init(); },[]);
+  const allTags = Array.from(new Set(ideas.flatMap(i=>i.tags||[]))).sort();
+  const filteredIdeas = selectedTags.length===0 ? ideas : ideas.filter(i=>(i.tags||[]).some(t=>selectedTags.includes(t)));
+  useEffect(()=>{ drawChart(filteredIdeas); },[selectedTags, ideas]);
 
   return React.createElement("div",{className:"max-w-4xl mx-auto p-6"},
     React.createElement("h1",{className:"text-3xl font-bold mb-6", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
@@ -96,9 +108,14 @@ function App() {
       )
     ),
 
+    React.createElement("div",{className:"mb-4 flex flex-wrap gap-2"},
+      allTags.map(t=>React.createElement("button",{key:t,className:"px-3 py-1 rounded", style:{backgroundColor:selectedTags.includes(t)?'#000000':'#FFFFFF', color:selectedTags.includes(t)?'#FFFFFF':'#000000', border:'2px solid #000000'}, onClick:()=>setSelectedTags(selectedTags.includes(t)?selectedTags.filter(x=>x!==t):[...selectedTags,t])},"#"+t)),
+      allTags.length>0 && React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#FFFFFF', color:'#000000', border:'2px solid #000000'}, onClick:()=>setSelectedTags([])},"Tous")
+    ),
+
     React.createElement("canvas",{ref:chartRef,className:"mb-8"}),
 
-    ideas.map(i=>React.createElement("div",{key:i.id,className:"bg-white border-4 border-black p-4 mb-3 rounded"},
+    filteredIdeas.map(i=>React.createElement("div",{key:i.id,className:"bg-white border-4 border-black p-4 mb-3 rounded"},
       React.createElement("div",{className:"mb-2 font-bold"},i.text),
       React.createElement("div",{className:"text-sm text-black mb-2"},(i.tags||[]).map(t=>"#"+t).join(" ")),
       React.createElement("div",{className:"text-xs mb-2"},"Votes: "+i.votes),
