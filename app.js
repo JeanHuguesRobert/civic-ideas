@@ -20,6 +20,7 @@ function App() {
   const [tags,setTags] = useState("");
   const [email,setEmail] = useState("");
   const [consent,setConsent] = useState(false);
+  const [showForm,setShowForm] = useState(false);
   const [voterType,setVoterType] = useState("cortenais");
   const chartRef = useRef(null);
 
@@ -52,7 +53,7 @@ function App() {
     if(!text) return;
     if(email && !consent){ alert("Consentement RGPD requis"); return; }
     await supabase.from("ideas").insert({text, tags:tags.split(",").map(t=>t.trim()).filter(Boolean), email:email||null});
-    setText(""); setTags(""); setEmail(""); setConsent(false);
+    setText(""); setTags(""); setEmail(""); setConsent(false); setShowForm(false);
     loadIdeas();
   }
 
@@ -86,17 +87,6 @@ function App() {
   return React.createElement("div",{className:"max-w-4xl mx-auto p-6"},
     React.createElement("h1",{className:"text-3xl font-bold mb-6", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
 
-    React.createElement("div",{className:"bg-white border-4 border-black p-4 mb-6 rounded"},
-      React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"Votre idée",value:text,onChange:e=>setText(e.target.value)}),
-      React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"#logement,#mobilite",value:tags,onChange:e=>setTags(e.target.value)}),
-      React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"email optionnel",value:email,onChange:e=>setEmail(e.target.value)}),
-      email && React.createElement("label",{className:"text-sm block mb-2"},
-        React.createElement("input",{type:"checkbox",checked:consent,onChange:e=>setConsent(e.target.checked)}),
-        " consentement RGPD responsable "+CONTACT_RGPD
-      ),
-      React.createElement("button",{className:"px-4 py-2 rounded", style:{backgroundColor:'#FF0000', color:'#FFFFFF', fontWeight:'bold'}, onClick:addIdea},"Ajouter")
-    ),
-
     React.createElement("div",{className:"mb-4"},
       React.createElement("select",{value:voterType,onChange:e=>setVoterType(e.target.value),className:"border-2 border-black p-2 rounded"},
         React.createElement("option",{value:"cortenais"},"Cortenais"),
@@ -113,7 +103,21 @@ function App() {
       React.createElement("div",{className:"text-sm text-black mb-2"},(i.tags||[]).map(t=>"#"+t).join(" ")),
       React.createElement("div",{className:"text-xs mb-2"},"Votes: "+i.votes),
       React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF', fontWeight:'bold'},onClick:()=>vote(i.id)},"👍 Voter")
-    ))
+    )),
+
+    React.createElement("div",{className:"mt-6"},
+      React.createElement("button",{className:"px-4 py-2 rounded mb-4", style:{backgroundColor:'#FF0000', color:'#FFFFFF', fontWeight:'bold'}, onClick:()=>setShowForm(!showForm)}, showForm ? "Fermer" : "Proposer une idée"),
+      showForm && React.createElement("div",{className:"bg-white border-4 border-black p-4 rounded"},
+        React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"Votre idée",value:text,onChange:e=>setText(e.target.value)}),
+        React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"#logement,#mobilite",value:tags,onChange:e=>setTags(e.target.value)}),
+        React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2",placeholder:"email optionnel",value:email,onChange:e=>setEmail(e.target.value)}),
+        email && React.createElement("label",{className:"text-sm block mb-2"},
+          React.createElement("input",{type:"checkbox",checked:consent,onChange:e=>setConsent(e.target.checked)}),
+          " consentement RGPD responsable "+CONTACT_RGPD
+        ),
+        React.createElement("button",{className:"px-4 py-2 rounded", style:{backgroundColor:'#FF0000', color:'#FFFFFF', fontWeight:'bold'}, onClick:addIdea},"Ajouter")
+      )
+    )
   );
 }
 
