@@ -26,6 +26,17 @@ function App() {
   const [votedIds,setVotedIds] = useState([]);
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
+  const appUrl = window.location.href;
+
+  async function shareApp(){
+    if(navigator.share){
+      try { await navigator.share({title:document.title, url:appUrl}); return; } catch(e){}
+    }
+    if(navigator.clipboard && window.isSecureContext){
+      try { await navigator.clipboard.writeText(appUrl); alert("Lien copié"); return; } catch(e){}
+    }
+    window.prompt("Copiez le lien", appUrl);
+  }
 
   async function seed() {
     if(!seedIdeas || seedIdeas.length===0) return;
@@ -110,7 +121,7 @@ function App() {
   return React.createElement("div",{className:"max-w-4xl mx-auto p-6"},
     React.createElement("h1",{className:"text-3xl font-bold mb-2", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
     React.createElement("div",{className:"mb-6"},
-      React.createElement("a",{href:"https://github.com/JeanHuguesRobert/civic-ideas", target:"_blank", rel:"noreferrer", className:"underline font-bold"},"Dépôt GitHub")
+      React.createElement("a",{href:"https://github.com/JeanHuguesRobert/civic-ideas", target:"_blank", rel:"noreferrer", className:"underline font-bold"},"Dépôt Open Source GitHub")
     ),
 
     React.createElement("div",{className:"mb-4"},
@@ -154,6 +165,14 @@ function App() {
           " consentement RGPD responsable "+CONTACT_RGPD
         ),
         React.createElement("button",{className:"px-4 py-2 rounded", style:{backgroundColor:'#FF0000', color:'#FFFFFF', fontWeight:'bold'}, onClick:addIdea},"Ajouter")
+      )
+    ),
+
+    React.createElement("div",{className:"mt-8 p-4 bg-white border-4 border-black rounded"},
+      React.createElement("div",{className:"font-bold mb-2"},"Partager l'application"),
+      React.createElement("div",{className:"flex flex-col sm:flex-row gap-2"},
+        React.createElement("input",{className:"flex-1 border-2 border-black p-2",readOnly:true,value:appUrl}),
+        React.createElement("button",{className:"px-4 py-2 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF', fontWeight:'bold'}, onClick:shareApp},"Copier le lien")
       )
     )
   );
