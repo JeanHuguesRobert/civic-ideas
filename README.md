@@ -7,9 +7,10 @@
 ## Fonctionnalités
 
 * Ajout d’idées par les utilisateurs avec étiquettes (#tags)
-* Vote sur les idées avec distinction par type de votant : Cortenais, région, étudiant, visiteur
+* Vote sur les idées avec distinction par type de votant : Résident, Alentour, Étudiant, Visiteur
 * Classement automatique des idées par nombre de votes
 * Visualisation graphique des priorités par catégorie
+* Filtrage des idées par tags
 * Champ email **optionnel** avec consentement RGPD
 * Style Bauhaus / palette Mondrian : cartes blanches, bordures noires, boutons colorés rouge/bleu/jaune
 * Seed initial des idées via `ideas-seed.json`
@@ -56,7 +57,7 @@ git push origin main
 ### 2. Configurer Supabase
 
 1. Créer un projet Supabase ou utiliser un existant.
-2. Noter `SUPABASE_URL` et `SUPABASE_KEY` (clé service role).
+2. Noter `SUPABASE_URL` et `SUPABASE_KEY` (clé **anon public**).
 3. Créer les tables SQL si nécessaire :
 
 ```sql
@@ -103,7 +104,7 @@ https://votre-site.netlify.app/ideas-seed.json
 ### 4. Utilisation
 
 1. Ouvrir le site Netlify.
-2. Ajouter une idée ou voter.
+2. Parcourir les idées, filtrer par tags, puis proposer une idée si besoin.
 3. Choisir le type de votant si nécessaire.
 4. Visualiser les priorités par catégorie dans le graphique.
 
@@ -113,7 +114,6 @@ https://votre-site.netlify.app/ideas-seed.json
 
 * Modifier `COMMUNE` dans `app.js` pour changer le nom de la ville.
 * Modifier `ideas-seed.json` pour changer le jeu d’idées initiales.
-* Les votes et idées restent dans Supabase et peuvent être conservés entre les communes si souhaité.
 
 ---
 
