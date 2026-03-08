@@ -97,7 +97,10 @@ function App() {
   useEffect(()=>{ drawChart(filteredIdeas); },[selectedTags, ideas]);
 
   return React.createElement("div",{className:"max-w-4xl mx-auto p-6"},
-    React.createElement("h1",{className:"text-3xl font-bold mb-6", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
+    React.createElement("h1",{className:"text-3xl font-bold mb-2", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
+    React.createElement("div",{className:"mb-6"},
+      React.createElement("a",{href:"https://github.com/JeanHuguesRobert/civic-ideas", target:"_blank", rel:"noreferrer", className:"underline font-bold"},"Dépôt GitHub")
+    ),
 
     React.createElement("div",{className:"mb-4"},
       React.createElement("span",{className:"mr-2 font-bold"},"Vous êtes : "),
