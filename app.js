@@ -23,6 +23,7 @@ function App() {
   const [showForm,setShowForm] = useState(false);
   const [voterType,setVoterType] = useState("résident");
   const [selectedTags,setSelectedTags] = useState([]);
+  const [votedIds,setVotedIds] = useState([]);
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -65,8 +66,12 @@ function App() {
   }
 
   async function vote(id){
+    if(votedIds.includes(id)){ alert("Vous avez déjà voté pour cette idée"); return; }
     let {error} = await supabase.from("votes").insert({idea_id:id,voter_type:voterType});
     if(error){ alert(error.message); return; }
+    const nextVoted = [...votedIds, id];
+    setVotedIds(nextVoted);
+    localStorage.setItem("votedIdeaIds", JSON.stringify(nextVoted));
     await loadIdeas();
   }
 
@@ -92,6 +97,12 @@ function App() {
   }
 
   useEffect(()=>{ async function init(){ await loadSeedIdeas(); await seed(); await loadIdeas(); } init(); },[]);
+  useEffect(()=>{ 
+    const stored = localStorage.getItem("votedIdeaIds");
+    if(stored){ 
+      try { setVotedIds(JSON.parse(stored)); } catch(e){ setVotedIds([]); }
+    }
+  },[]);
   const allTags = Array.from(new Set(ideas.flatMap(i=>i.tags||[]))).sort();
   const filteredIdeas = selectedTags.length===0 ? ideas : ideas.filter(i=>(i.tags||[]).some(t=>selectedTags.includes(t)));
   useEffect(()=>{ drawChart(filteredIdeas); },[selectedTags, ideas]);
@@ -123,7 +134,7 @@ function App() {
       React.createElement("div",{className:"mb-2 font-bold"},i.text),
       React.createElement("div",{className:"text-sm text-black mb-2"},(i.tags||[]).map(t=>"#"+t).join(" ")),
       React.createElement("div",{className:"text-xs mb-2"},"Votes : "+i.votes),
-      React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF', fontWeight:'bold'},onClick:()=>vote(i.id)},"👍 Voter")
+      React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:votedIds.includes(i.id)?'#000000':'#0000FF', color:'#FFFFFF', fontWeight:'bold', opacity:votedIds.includes(i.id)?0.6:1, cursor:votedIds.includes(i.id)?'not-allowed':'pointer'},onClick:()=>vote(i.id)},"👍 Voter")
     )),
 
     React.createElement("div",{className:"mt-6"},
