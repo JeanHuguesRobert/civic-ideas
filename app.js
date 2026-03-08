@@ -1,10 +1,11 @@
 // --- CONFIGURATION --- //
-const SUPABASE_URL = "COLLER_URL_SUPABASE";
-const SUPABASE_KEY = "COLLER_CLE_SUPABASE";
+const SUPABASE_URL = "https://bzgftajvobdmaxpbfdva.supabase.co";
+const SUPABASE_KEY = "sb_publishable_-Q__aDDOjH8beKr1Qec9Hw_UfqZlu9x";
 const COMMUNE = "Corte";
 const CONTACT_RGPD = "jean_hugues_robert@yahoo.com";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var supabase = window.supabaseClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.supabaseClient = supabase;
 const {useState, useEffect, useRef} = React;
 
 let seedIdeas = [];
