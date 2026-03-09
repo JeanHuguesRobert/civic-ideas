@@ -322,14 +322,14 @@ function App() {
             React.createElement("div",{className:"mb-3"},
               editingComment ? React.createElement("div",{},
                 React.createElement("div",{className:"font-bold mb-2"},"Modifier le commentaire"),
-                React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
+                React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre nom, pseudo ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
               React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
               React.createElement("div",{className:"flex gap-2"},
                 React.createElement("button",{className:"px-3 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>updateComment(editingComment)},"Modifier"),
                 React.createElement("button",{className:"px-3 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:'#666666', color:'#FFFFFF'}, onClick:cancelEdit},"Annuler")
               )
             ) : React.createElement("div",{},
-              React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
+              React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre nom, pseudo ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
               React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
               React.createElement("button",{className:"px-3 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>addComment(i.id)},"Ajouter commentaire")
             )
