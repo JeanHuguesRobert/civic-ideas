@@ -242,7 +242,10 @@ function App() {
   useEffect(()=>{ drawChart(filteredIdeas); },[selectedTags, ideas]);
 
   return React.createElement("div",{className:"max-w-4xl mx-auto p-4 sm:p-6"},
-    React.createElement("h1",{className:"text-2xl sm:text-3xl font-bold mb-2 sm:mb-4", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
+    React.createElement("div",{className:"text-center mb-4"},
+      React.createElement("img",{src:"image.png", alt:"Logo Civic Ideas", className:"mx-auto mb-2 max-w-full h-auto", style:{maxHeight:'120px'}})
+    ),
+    React.createElement("h1",{className:"text-2xl sm:text-3xl font-bold mb-2 sm:mb-4 text-center", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
     
     React.createElement("div",{className:"mb-4"},
       React.createElement("button",{className:"px-4 py-2 rounded mb-2 text-sm sm:text-base", style:{backgroundColor:'#000000', color:'#FFFFFF', fontWeight:'bold'}, onClick:toggleHelp},
