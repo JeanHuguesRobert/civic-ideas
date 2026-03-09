@@ -16,6 +16,7 @@ async function loadSeedIdeas() {
 
 function App() {
   const [ideas,setIdeas] = useState([]);
+  const [comments,setComments] = useState({});
   const [text,setText] = useState("");
   const [tags,setTags] = useState("");
   const [email,setEmail] = useState("");
@@ -24,6 +25,10 @@ function App() {
   const [voterType,setVoterType] = useState("résident");
   const [selectedTags,setSelectedTags] = useState([]);
   const [votedIds,setVotedIds] = useState([]);
+  const [commentText,setCommentText] = useState("");
+  const [commentAuthor,setCommentAuthor] = useState("");
+  const [editingComment,setEditingComment] = useState(null);
+  const [expandedIdeas,setExpandedIdeas] = useState({});
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const appUrl = window.location.href;
@@ -62,9 +67,95 @@ function App() {
       m.votes++;
       m.byType[v.voter_type]=(m.byType[v.voter_type]||0)+1;
     });
-    let list = Object.values(map).sort((a,b)=>b.votes-a.votes);
+    let list = Object.values(map).sort((a,b)=>(b.byType["résident"]||0)-(a.byType["résident"]||0));
     setIdeas(list);
     drawChart(list);
+    await loadComments();
+  }
+
+  async function loadComments(){
+    let {data, error} = await supabase.from("comments").select("*");
+    if(error){ alert(error.message); return; }
+    const commentsByIdea = {};
+    (data||[]).forEach(c=>{
+      if(!commentsByIdea[c.idea_id]) commentsByIdea[c.idea_id] = [];
+      commentsByIdea[c.idea_id].push(c);
+    });
+    setComments(commentsByIdea);
+  }
+
+  async function addComment(ideaId){
+    if(!commentText || !commentAuthor) return;
+    const commentData = {
+      idea_id: ideaId,
+      author: commentAuthor,
+      content: commentText,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      local_id: Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+    };
+    
+    let {error} = await supabase.from("comments").insert(commentData);
+    if(error){ alert(error.message); return; }
+    
+    const localKey = `comment_${commentData.local_id}`;
+    localStorage.setItem(localKey, JSON.stringify({author: commentAuthor}));
+    
+    setCommentText("");
+    setCommentAuthor("");
+    await loadComments();
+  }
+
+  async function updateComment(comment){
+    if(!commentText) return;
+    const updatedComment = {
+      ...comment,
+      content: commentText,
+      updated_at: new Date().toISOString()
+    };
+    
+    let {error} = await supabase.from("comments").update(updatedComment).eq("id", comment.id);
+    if(error){ alert(error.message); return; }
+    
+    setCommentText("");
+    setCommentAuthor("");
+    setEditingComment(null);
+    await loadComments();
+  }
+
+  async function deleteComment(comment){
+    if(!confirm("Supprimer ce commentaire ?")) return;
+    
+    let {error} = await supabase.from("comments").delete().eq("id", comment.id);
+    if(error){ alert(error.message); return; }
+    
+    const localKey = `comment_${comment.local_id}`;
+    localStorage.removeItem(localKey);
+    
+    await loadComments();
+  }
+
+  function canEditComment(comment){
+    if(!comment.local_id) return false;
+    const localKey = `comment_${comment.local_id}`;
+    const stored = localStorage.getItem(localKey);
+    return stored !== null;
+  }
+
+  function startEditComment(comment){
+    setCommentText(comment.content);
+    setCommentAuthor(comment.author);
+    setEditingComment(comment);
+  }
+
+  function cancelEdit(){
+    setCommentText("");
+    setCommentAuthor("");
+    setEditingComment(null);
+  }
+
+  function toggleComments(ideaId){
+    setExpandedIdeas(prev=>({...prev, [ideaId]: !prev[ideaId]}));
   }
 
   async function addIdea(){
@@ -151,7 +242,41 @@ function App() {
         (i.byType && i.byType["étudiant"]>0) ? "Étudiant: "+i.byType["étudiant"]+" " : "",
         (i.byType && i.byType["visiteur"]>0) ? "Visiteur: "+i.byType["visiteur"] : ""
       ),
-      React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:votedIds.includes(i.id)?'#000000':'#0000FF', color:'#FFFFFF', fontWeight:'bold', opacity:votedIds.includes(i.id)?0.6:1, cursor:votedIds.includes(i.id)?'not-allowed':'pointer'},onClick:()=>vote(i.id)},"👍 Voter")
+      React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:votedIds.includes(i.id)?'#000000':'#0000FF', color:'#FFFFFF', fontWeight:'bold', opacity:votedIds.includes(i.id)?0.6:1, cursor:votedIds.includes(i.id)?'not-allowed':'pointer'},onClick:()=>vote(i.id)},"👍 Voter"),
+      
+      React.createElement("div",{className:"mt-4"},
+        React.createElement("button",{className:"text-sm underline mb-2", onClick:()=>toggleComments(i.id)},
+          expandedIdeas[i.id] ? "Masquer les commentaires" : "Afficher les commentaires ("+(comments[i.id]?.length||0)+")"
+        ),
+        expandedIdeas[i.id] && React.createElement("div",{className:"mt-2"},
+            React.createElement("div",{className:"mb-3"},
+              editingComment ? React.createElement("div",{},
+                React.createElement("div",{className:"font-bold mb-2"},"Modifier le commentaire"),
+                React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
+                React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
+                React.createElement("div",{className:"flex gap-2"},
+                  React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>updateComment(editingComment)},"Modifier"),
+                  React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#666666', color:'#FFFFFF'}, onClick:cancelEdit},"Annuler")
+                )
+              ) : React.createElement("div",{},
+                React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
+                React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
+                React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>addComment(i.id)},"Ajouter commentaire")
+              )
+            ),
+          
+          (comments[i.id]||[]).sort((a,b)=>new Date(b.created_at) - new Date(a.created_at)).map(c=>React.createElement("div",{key:c.id,className:"bg-gray-100 p-3 mb-2 rounded"},
+            React.createElement("div",{className:"text-sm font-bold"},c.author),
+            React.createElement("div",{className:"text-xs text-gray-600 mb-1"},new Date(c.created_at).toLocaleString('fr-FR') + (c.created_at !== c.updated_at ? " (modifié)" : "")),
+            React.createElement("div",{className:"text-sm", dangerouslySetInnerHTML:{__html: c.content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/`(.*?)`/g, '<code>$1</code>')}}),
+            
+            canEditComment(c) && React.createElement("div",{className:"mt-2"},
+              React.createElement("button",{className:"text-xs text-blue-600 mr-2", onClick:()=>startEditComment(c)},"Modifier"),
+              React.createElement("button",{className:"text-xs text-red-600", onClick:()=>deleteComment(c)},"Supprimer")
+            )
+          ))
+        )
+      )
     )),
 
     React.createElement("div",{className:"mt-6"},

@@ -1,17 +1,19 @@
 # Civic Ideas – Boîte à idées citoyenne
 
-**Prototype interactif pour les communes**, permettant aux habitants de proposer, voter et prioriser des idées locales. Conçu pour être facilement adaptable à toute commune.
+**Prototype interactif pour les communes**, permettant aux habitants de proposer, commenter, voter et prioriser des idées locales. Conçu pour être facilement adaptable à toute commune.
 
 ---
 
 ## Fonctionnalités
 
-* Ajout d’idées par les utilisateurs avec étiquettes (#tags)
+* Ajout d'idées par les utilisateurs avec étiquettes (#tags)
 * Vote sur les idées avec distinction par type de votant : Résident, Alentour, Étudiant, Visiteur
+* **Système complet de commentaires** avec support Markdown
 * Classement automatique des idées par nombre de votes
 * Visualisation graphique des priorités par catégorie
 * Filtrage des idées par tags
 * Champ email **optionnel** avec consentement RGPD
+* **Authentification locale** pour l'édition/suppression des commentaires
 * Style Bauhaus / palette Mondrian : cartes blanches, bordures noires, boutons colorés rouge/bleu/jaune
 * Seed initial des idées via `ideas-seed.json`
 
@@ -73,6 +75,19 @@ create table if not exists votes (
   idea_id bigint references ideas(id),
   voter_type text
 );
+
+create table if not exists comments (
+  id bigserial primary key,
+  idea_id bigint references ideas(id) on delete cascade,
+  author text not null,
+  content text not null,
+  local_id text unique,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create index if not exists idx_comments_idea_id on comments(idea_id);
+create index if not exists idx_comments_created_at on comments(created_at desc);
 ```
 
 4. Remplacer les placeholders dans `app.js` :
@@ -106,7 +121,19 @@ https://votre-site.netlify.app/ideas-seed.json
 1. Ouvrir le site Netlify.
 2. Parcourir les idées, filtrer par tags, puis proposer une idée si besoin.
 3. Choisir le type de votant si nécessaire.
-4. Visualiser les priorités par catégorie dans le graphique.
+4. **Commenter les idées** : Cliquer sur "Afficher les commentaires" sous une idée
+5. **Formatage Markdown** : Utiliser `**gras**`, `*italique*`, ``code`` dans les commentaires
+6. **Édition/Suppression** : Seul l'auteur original peut modifier/supprimer ses commentaires
+7. Visualiser les priorités par catégorie dans le graphique.
+
+### 5. Système de commentaires
+
+* **Ajout** : Nom/email + commentaire avec support Markdown basique
+* **Authentification** : Via localStorage du navigateur
+* **Édition** : Boutons "Modifier" réservés à l'auteur
+* **Suppression** : Confirmation avant suppression
+* **Tri** : Commentaires affichés du plus récent au plus ancien
+* **Timestamps** : Dates de création et modification visibles
 
 ---
 
