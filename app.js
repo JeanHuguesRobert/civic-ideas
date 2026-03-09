@@ -29,6 +29,8 @@ function App() {
   const [commentAuthor,setCommentAuthor] = useState("");
   const [editingComment,setEditingComment] = useState(null);
   const [expandedIdeas,setExpandedIdeas] = useState({});
+  const [showHelp,setShowHelp] = useState(false);
+  const [helpContent,setHelpContent] = useState("");
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const appUrl = window.location.href;
@@ -158,6 +160,30 @@ function App() {
     setExpandedIdeas(prev=>({...prev, [ideaId]: !prev[ideaId]}));
   }
 
+  async function loadHelpContent(){
+    try {
+      const res = await fetch("mode-emploi.md");
+      if(res.ok){
+        const content = await res.text();
+        // Remplacer la date dynamiquement
+        const datedContent = content.replace("{date}", new Date().toLocaleDateString('fr-FR'));
+        setHelpContent(datedContent);
+      }
+    } catch(e){
+      setHelpContent("# Mode d'emploi\n\nLe fichier d'aide n'a pas pu être chargé.");
+    }
+  }
+
+  function toggleHelp(){
+    const newState = !showHelp;
+    setShowHelp(newState);
+    localStorage.setItem("helpOpen", newState.toString());
+    
+    if(!helpContent && newState){
+      loadHelpContent();
+    }
+  }
+
   async function addIdea(){
     if(!text) return;
     if(email && !consent){ alert("Consentement RGPD requis"); return; }
@@ -204,6 +230,12 @@ function App() {
     if(stored){ 
       try { setVotedIds(JSON.parse(stored)); } catch(e){ setVotedIds([]); }
     }
+    
+    const helpState = localStorage.getItem("helpOpen");
+    if(helpState === "true"){
+      setShowHelp(true);
+      loadHelpContent();
+    }
   },[]);
   const allTags = Array.from(new Set(ideas.flatMap(i=>i.tags||[]))).sort();
   const filteredIdeas = selectedTags.length===0 ? ideas : ideas.filter(i=>(i.tags||[]).some(t=>selectedTags.includes(t)));
@@ -211,6 +243,44 @@ function App() {
 
   return React.createElement("div",{className:"max-w-4xl mx-auto p-6"},
     React.createElement("h1",{className:"text-3xl font-bold mb-2", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
+    
+    React.createElement("div",{className:"mb-4"},
+      React.createElement("button",{className:"px-4 py-2 rounded mb-2", style:{backgroundColor:'#000000', color:'#FFFFFF', fontWeight:'bold'}, onClick:toggleHelp},
+        showHelp ? "Masquer l'aide" : "Afficher le mode d'emploi"
+      ),
+      showHelp && React.createElement("div",{className:"bg-white border-4 border-black p-4 rounded"},
+        React.createElement("div",{className:"prose max-w-none", dangerouslySetInnerHTML:{__html: 
+          helpContent
+            .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-4">$1</h1>')
+            .replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-6 mb-3">$1</h2>')
+            .replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded">$1</code>')
+            .replace(/^- (.*$)/gm, '<li>$1</li>')
+            .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+            .replace(/<li>(.*)<\/li>/g, '<li class="ml-4">$1</li>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/^<p>(.*)<\/p>$/gm, '<p class="mb-3">$1</p>')
+            .replace(/✅/g, '<span class="text-green-600">✅</span>')
+            .replace(/🎯/g, '<span class="text-blue-600">🎯</span>')
+            .replace(/💡/g, '<span class="text-yellow-600">💡</span>')
+            .replace(/🗳️/g, '<span class="text-purple-600">🗳️</span>')
+            .replace(/🏷️/g, '<span class="text-indigo-600">🏷️</span>')
+            .replace(/💬/g, '<span class="text-teal-600">💬</span>')
+            .replace(/✏️/g, '<span class="text-orange-600">✏️</span>')
+            .replace(/📊/g, '<span class="text-red-600">📊</span>')
+            .replace(/🔗/g, '<span class="text-blue-600">🔗</span>')
+            .replace(/🎨/g, '<span class="text-pink-600">🎨</span>')
+            .replace(/🔒/g, '<span class="text-gray-600">🔒</span>')
+            .replace(/📱/g, '<span class="text-green-600">📱</span>')
+            .replace(/🛠️/g, '<span class="text-gray-600">🛠️</span>')
+            .replace(/📖/g, '<span class="text-blue-600">📖</span>')
+        }})
+      )
+    ),
+    
     React.createElement("div",{className:"mb-6"},
       React.createElement("a",{href:"https://github.com/JeanHuguesRobert/civic-ideas", target:"_blank", rel:"noreferrer", className:"underline font-bold"},"Dépôt Open Source GitHub")
     ),
