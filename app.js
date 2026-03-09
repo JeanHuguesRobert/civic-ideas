@@ -241,14 +241,14 @@ function App() {
   const filteredIdeas = selectedTags.length===0 ? ideas : ideas.filter(i=>(i.tags||[]).some(t=>selectedTags.includes(t)));
   useEffect(()=>{ drawChart(filteredIdeas); },[selectedTags, ideas]);
 
-  return React.createElement("div",{className:"max-w-4xl mx-auto p-6"},
-    React.createElement("h1",{className:"text-3xl font-bold mb-2", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
+  return React.createElement("div",{className:"max-w-4xl mx-auto p-4 sm:p-6"},
+    React.createElement("h1",{className:"text-2xl sm:text-3xl font-bold mb-2 sm:mb-4", style:{borderBottom:'8px solid #000000', paddingBottom:'8px'}},"Boîte à idées citoyenne – "+COMMUNE),
     
     React.createElement("div",{className:"mb-4"},
-      React.createElement("button",{className:"px-4 py-2 rounded mb-2", style:{backgroundColor:'#000000', color:'#FFFFFF', fontWeight:'bold'}, onClick:toggleHelp},
+      React.createElement("button",{className:"px-4 py-2 rounded mb-2 text-sm sm:text-base", style:{backgroundColor:'#000000', color:'#FFFFFF', fontWeight:'bold'}, onClick:toggleHelp},
         showHelp ? "Masquer l'aide" : "Afficher le mode d'emploi"
       ),
-      showHelp && React.createElement("div",{className:"bg-white border-4 border-black p-4 rounded"},
+      showHelp && React.createElement("div",{className:"bg-white border-4 border-black p-3 sm:p-4 rounded"},
         React.createElement("div",{className:"prose max-w-none", dangerouslySetInnerHTML:{__html: 
           helpContent
             .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-4">$1</h1>')
@@ -281,13 +281,13 @@ function App() {
       )
     ),
     
-    React.createElement("div",{className:"mb-6"},
-      React.createElement("a",{href:"https://github.com/JeanHuguesRobert/civic-ideas", target:"_blank", rel:"noreferrer", className:"underline font-bold"},"Dépôt Open Source GitHub")
+    React.createElement("div",{className:"mb-4 sm:mb-6"},
+      React.createElement("a",{href:"https://github.com/JeanHuguesRobert/civic-ideas", target:"_blank", rel:"noreferrer", className:"underline font-bold text-sm sm:text-base"},"Dépôt Open Source GitHub")
     ),
 
     React.createElement("div",{className:"mb-4"},
-      React.createElement("span",{className:"mr-2 font-bold"},"Vous êtes : "),
-      React.createElement("select",{value:voterType,onChange:e=>setVoterType(e.target.value),className:"border-2 border-black p-2 rounded"},
+      React.createElement("span",{className:"mr-2 font-bold text-sm sm:text-base"},"Vous êtes : "),
+      React.createElement("select",{value:voterType,onChange:e=>setVoterType(e.target.value),className:"border-2 border-black p-2 rounded text-sm sm:text-base"},
         React.createElement("option",{value:"résident"},"Résident"),
         React.createElement("option",{value:"alentour"},"Alentour"),
         React.createElement("option",{value:"étudiant"},"Étudiant"),
@@ -295,16 +295,16 @@ function App() {
       )
     ),
 
-    React.createElement("div",{className:"mb-4 flex flex-wrap gap-2"},
-      allTags.map(t=>React.createElement("button",{key:t,className:"px-3 py-1 rounded", style:{backgroundColor:selectedTags.includes(t)?'#000000':'#FFFFFF', color:selectedTags.includes(t)?'#FFFFFF':'#000000', border:'2px solid #000000'}, onClick:()=>setSelectedTags(selectedTags.includes(t)?selectedTags.filter(x=>x!==t):[...selectedTags,t])},"#"+t)),
-      allTags.length>0 && React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#FFFFFF', color:'#000000', border:'2px solid #000000'}, onClick:()=>setSelectedTags([])},"Tous")
+    React.createElement("div",{className:"mb-4 flex flex-wrap gap-1 sm:gap-2"},
+      allTags.map(t=>React.createElement("button",{key:t,className:"px-2 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:selectedTags.includes(t)?'#000000':'#FFFFFF', color:selectedTags.includes(t)?'#FFFFFF':'#000000', border:'2px solid #000000'}, onClick:()=>setSelectedTags(selectedTags.includes(t)?selectedTags.filter(x=>x!==t):[...selectedTags,t])},"#"+t)),
+      allTags.length>0 && React.createElement("button",{className:"px-2 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:'#FFFFFF', color:'#000000', border:'2px solid #000000'}, onClick:()=>setSelectedTags([])},"Tous")
     ),
 
-    React.createElement("canvas",{ref:chartRef,className:"mb-8"}),
+    React.createElement("canvas",{ref:chartRef,className:"mb-6 sm:mb-8"}),
 
-    filteredIdeas.map(i=>React.createElement("div",{key:i.id,className:"bg-white border-4 border-black p-4 mb-3 rounded"},
-      React.createElement("div",{className:"mb-2 font-bold"},i.text),
-      React.createElement("div",{className:"text-sm text-black mb-2"},(i.tags||[]).map(t=>"#"+t).join(" ")),
+    filteredIdeas.map(i=>React.createElement("div",{key:i.id,className:"bg-white border-4 border-black p-3 sm:p-4 mb-3 rounded"},
+      React.createElement("div",{className:"mb-2 font-bold text-sm sm:text-base"},i.text),
+      React.createElement("div",{className:"text-xs sm:text-sm text-black mb-2"},(i.tags||[]).map(t=>"#"+t).join(" ")),
       React.createElement("div",{className:"text-xs mb-2"},"Votes : "+i.votes),
       React.createElement("div",{className:"text-xs mb-2"},
         (i.byType && i.byType["résident"]>0) ? "Résident: "+i.byType["résident"]+" " : "",
@@ -312,27 +312,27 @@ function App() {
         (i.byType && i.byType["étudiant"]>0) ? "Étudiant: "+i.byType["étudiant"]+" " : "",
         (i.byType && i.byType["visiteur"]>0) ? "Visiteur: "+i.byType["visiteur"] : ""
       ),
-      React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:votedIds.includes(i.id)?'#000000':'#0000FF', color:'#FFFFFF', fontWeight:'bold', opacity:votedIds.includes(i.id)?0.6:1, cursor:votedIds.includes(i.id)?'not-allowed':'pointer'},onClick:()=>vote(i.id)},"👍 Voter"),
+      React.createElement("button",{className:"px-3 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:votedIds.includes(i.id)?'#000000':'#0000FF', color:'#FFFFFF', fontWeight:'bold', opacity:votedIds.includes(i.id)?0.6:1, cursor:votedIds.includes(i.id)?'not-allowed':'pointer'},onClick:()=>vote(i.id)},"👍 Voter"),
       
       React.createElement("div",{className:"mt-4"},
-        React.createElement("button",{className:"text-sm underline mb-2", onClick:()=>toggleComments(i.id)},
-          expandedIdeas[i.id] ? "Masquer les commentaires" : "Afficher les commentaires ("+(comments[i.id]?.length||0)+")"
-        ),
-        expandedIdeas[i.id] && React.createElement("div",{className:"mt-2"},
+          React.createElement("button",{className:"text-xs sm:text-sm underline mb-2", onClick:()=>toggleComments(i.id)},
+            expandedIdeas[i.id] ? "Masquer les commentaires" : "Afficher les commentaires ("+(comments[i.id]?.length||0)+")"
+          ),
+          expandedIdeas[i.id] && React.createElement("div",{className:"mt-2"},
             React.createElement("div",{className:"mb-3"},
               editingComment ? React.createElement("div",{},
                 React.createElement("div",{className:"font-bold mb-2"},"Modifier le commentaire"),
-                React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
-                React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
-                React.createElement("div",{className:"flex gap-2"},
-                  React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>updateComment(editingComment)},"Modifier"),
-                  React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#666666', color:'#FFFFFF'}, onClick:cancelEdit},"Annuler")
-                )
-              ) : React.createElement("div",{},
-                React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
-                React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
-                React.createElement("button",{className:"px-3 py-1 rounded", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>addComment(i.id)},"Ajouter commentaire")
+                React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
+              React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
+              React.createElement("div",{className:"flex gap-2"},
+                React.createElement("button",{className:"px-3 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>updateComment(editingComment)},"Modifier"),
+                React.createElement("button",{className:"px-3 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:'#666666', color:'#FFFFFF'}, onClick:cancelEdit},"Annuler")
               )
+            ) : React.createElement("div",{},
+              React.createElement("input",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre nom ou email", value:commentAuthor, onChange:e=>setCommentAuthor(e.target.value)}),
+              React.createElement("textarea",{className:"w-full border-2 border-black p-2 mb-2 text-sm sm:text-base", placeholder:"Votre commentaire (Markdown supporté)", value:commentText, onChange:e=>setCommentText(e.target.value), rows:3}),
+              React.createElement("button",{className:"px-3 py-1 rounded text-xs sm:text-sm", style:{backgroundColor:'#0000FF', color:'#FFFFFF'}, onClick:()=>addComment(i.id)},"Ajouter commentaire")
+            )
             ),
           
           (comments[i.id]||[]).sort((a,b)=>new Date(b.created_at) - new Date(a.created_at)).map(c=>React.createElement("div",{key:c.id,className:"bg-gray-100 p-3 mb-2 rounded"},

@@ -21,7 +21,7 @@
 
 ### 💬 Commenter une idée
 1. Cliquez sur **"Afficher les commentaires"** sous une idée
-2. Entrez votre **nom ou email**
+2. Entrez votre **nom, pseudo ou email**
 3. Rédigez votre commentaire (support **Markdown** : `**gras**`, `*italique*`, ``code``)
 4. Cliquez sur **"Ajouter commentaire"**
 
@@ -64,6 +64,3 @@
 ## 🛠️ Support technique
 
 Problème technique ? Contact : jean_hugues_robert@yahoo.com
-
----
-*Dernière mise à jour : {date}*
